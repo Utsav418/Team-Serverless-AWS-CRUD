@@ -1,0 +1,57 @@
+service: aws-team-project
+frameworkVersion: '3'
+custom:
+  secrets: ${file(secrets.json)}
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  timeout: 30
+  stage: ${self:custom.secrets.NODE_ENV}
+  environment: 
+    NODE_ENV: ${self:custom.secrets.NODE_ENV}
+    DB_NAME: ${self:custom.secrets.DB_NAME}
+    DB_USER: ${self:custom.secrets.DB_USER}
+    DB_PASSWORD: ${self:custom.secrets.DB_PASSWORD}
+    DB_HOST: ${self:custom.secrets.DB_HOST}
+    DB_PORT: ${self:custom.secrets.DB_PORT}
+
+functions:
+  createTeam:
+    handler: handler/createTeam.createTeam
+    events:
+      - http:
+          path: teams
+          method: post
+          cors: true
+  getOneTeam:
+    handler: handler/listTeam.getTeam
+    events:
+      - http:
+          path: team/{id}
+          method: get
+          cors: true
+  getAllTeam:
+    handler: handler/listTeam.getAllTeam
+    events:
+     - http:
+         path: teams
+         method: get
+         cors: true
+  updateTeam:
+    handler: handler/updateTeam.updateTeam
+    events:
+     - http:
+         path: team/{id}
+         method: put
+         cors: true
+  deleteTeam:
+    handler: handler/deleteTeam.deleteTeam
+    events:
+     - http:
+         path: team/{id}
+         method: delete
+         cors: true
+
+plugins:
+  - serverless-offline
